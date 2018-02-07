@@ -8,15 +8,17 @@
 
 import UIKit
 import AlamofireImage
-import PKHUD
 
-class NowPlayingViewController: UIViewController, UITableViewDataSource {
+class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var movies: [[String: Any]] = []
+    var filteredData: [[String: Any]] = []
     var refreshControl: UIRefreshControl!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,11 +29,15 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource {
         
         tableView.insertSubview(refreshControl, at: 0)
         tableView.dataSource = self
+        searchBar.delegate = self
         
         // Set the height of the cells
         self.tableView.rowHeight = 190
         
         fetchMovies()
+        
+        // Set the filtered Data to the complete movies dictionary
+        filteredData = movies
     }
     
     @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
@@ -40,7 +46,6 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource {
     
     func fetchMovies() {
         tableView.alpha = 0
-        //HUD.show(.progress, onView: tableView)
         activityIndicator.startAnimating()
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
@@ -73,7 +78,6 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource {
                 self.movies = movies
                 self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
-                //HUD.hide(afterDelay: 0)
                 self.tableView.alpha = 1
                 self.activityIndicator.stopAnimating()
             }
@@ -83,13 +87,13 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        return filteredData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
         
-        let movie = movies[indexPath.row]
+        let movie = filteredData[indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
         cell.titleLabel.text = title
@@ -106,6 +110,25 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource {
         cell.selectedBackgroundView = backgroundView
         
         return cell
+    }
+    
+    // This method updates filteredData based on the text in the Search Box
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // When there is no text, filteredData is the same as the original data
+        // When user has entered text into the search box
+        // Use the filter method to iterate over all items in the data array
+        // For each item, return true if the item should be included and false if the
+        // item should NOT be included
+        filteredData = searchText.isEmpty ? movies : movies.filter { (item: [String:Any]) -> Bool in
+           
+            // Cast it so that it searches for the title
+            let title = item["title"] as! String
+            
+             // If dataItem matches the searchText, return true to include it
+            return title.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
+        }
+        
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
