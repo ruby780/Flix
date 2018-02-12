@@ -116,20 +116,20 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Release Date" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ePW-we-OFs">
-                                <rect key="frame" x="30" y="445" width="329" height="202"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="OverView" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="GcR-db-svc">
+                                <rect key="frame" x="30" y="429" width="329" height="154"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <viewLayoutGuide key="safeArea" id="bbE-3W-OGd"/>
                     </view>
                     <connections>
                         <outlet property="backDropImageView" destination="02p-ES-hDQ" id="xXc-N1-cee"/>
-                        <outlet property="overviewLabel" destination="ePW-we-OFs" id="vex-Gy-gee"/>
+                        <outlet property="overviewTextView" destination="GcR-db-svc" id="n9R-KH-MGv"/>
                         <outlet property="posterImageView" destination="82K-XB-3E3" id="coJ-UY-ESn"/>
                         <outlet property="releaseDateLabel" destination="9lW-uU-3Eo" id="sDc-63-8y3"/>
                         <outlet property="titleLabel" destination="0fn-Cm-2Iq" id="ecu-im-oL8"/>
@@ -216,6 +216,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="fR9-Ij-swR" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Df5-ed-wHl">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>

@@ -115,11 +115,6 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         let posterURL = URL(string: baseURLString + posterPathString)!
         cell.posterImageView.af_setImage(withURL: posterURL)
         
-        // Use a cyan color when the user selects a cell
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.cyan
-        cell.selectedBackgroundView = backgroundView
-        
         return cell
     }
     
@@ -130,7 +125,12 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
             let detailViewController = segue.destination as! DetailViewController
             detailViewController.movie = movie
         }
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let index = self.tableView.indexPathForSelectedRow{
+            self.tableView.deselectRow(at: index, animated: true)
+        }
     }
     
     // This method updates filteredData based on the text in the Search Box
