@@ -10,7 +10,7 @@ import UIKit
 import AlamofireImage
 
 class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearchBarDelegate {
-
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -40,21 +40,27 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         filteredData = movies
     }
     
+    // Refresh data function. Will call the function to fetch data
     @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
         fetchMovies()
     }
     
     func fetchMovies() {
+        // Data fetch animation
         tableView.alpha = 0
         activityIndicator.startAnimating()
+        
+        // Get the URL and request the data
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         let task = session.dataTask(with: request) { (data, response, error) in
+            
             // This will run when the network request returns
             if let error = error {
+                
                 print(error.localizedDescription)
-
+                
                 // Create Network Error handler
                 let alertController = UIAlertController(title: "Cannot Get Movies", message: "The internet connection appears to be offline", preferredStyle: .alert)
                 
@@ -67,14 +73,19 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
                 alertController.addAction(TryAction)
                 
                 // Show error message
-                self.present(alertController, animated: true) {
-                }
+                self.present(alertController, animated: true) {}
                 return
                 
             } else if let data = data {
+                // Fetch the data from the JSON file
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                 print(dataDictionary)
                 let movies = dataDictionary["results"] as! [[String: Any]]
+                
+                // When app starts and movies is empty, assign data to filtered Data as well
+                if (self.movies.isEmpty) {self.filteredData = movies}
+                
+                // Store data into movies dictionary and reload table
                 self.movies = movies
                 self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
@@ -112,6 +123,16 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         return cell
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let cell = sender as! UITableViewCell
+        if let indexPath = tableView.indexPath(for: cell) {
+            let movie = movies[indexPath.row]
+            let detailViewController = segue.destination as! DetailViewController
+            detailViewController.movie = movie
+        }
+        
+    }
+    
     // This method updates filteredData based on the text in the Search Box
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // When there is no text, filteredData is the same as the original data
@@ -120,21 +141,21 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         // For each item, return true if the item should be included and false if the
         // item should NOT be included
         filteredData = searchText.isEmpty ? movies : movies.filter { (item: [String:Any]) -> Bool in
-           
+            
             // Cast it so that it searches for the title
             let title = item["title"] as! String
             
-             // If dataItem matches the searchText, return true to include it
+            // If dataItem matches the searchText, return true to include it
             return title.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
         }
         
         tableView.reloadData()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
+    
 }
