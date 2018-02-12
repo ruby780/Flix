@@ -192,6 +192,7 @@
                                         </view>
                                         <connections>
                                             <outlet property="posterimageView" destination="Ia1-Hy-Tfi" id="hGe-MV-rce"/>
+                                            <segue destination="wA8-iF-dhU" kind="show" id="Tye-xs-DFl"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -251,4 +252,7 @@
         <image name="now_playing_tabbar_item" width="21" height="21"/>
         <image name="superhero_tabbar_item" width="21" height="23"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="Tye-xs-DFl"/>
+    </inferredMetricsTieBreakers>
 </document>
