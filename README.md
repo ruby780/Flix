@@ -79,8 +79,8 @@ The following **required** functionality is completed:
 The following **stretch** features are implemented:
 
 - [x] User can tap a poster in the collection view to see a detail screen of that movie (+3pts)
-- [ ] In the detail view, when the user taps the poster, a new screen is presented modally where they can view the trailer (+3pts)
-- [ ] Customize the navigation bar (+1pt)
+- [x] In the detail view, when the user taps the poster, a new screen is presented modally where they can view the trailer (+3pts)
+- [x] Customize the navigation bar (+1pt)
 - [x] Implemented the search bar function
 - [x] Added a deselect animation when clicking a cell
    - ...
@@ -92,14 +92,14 @@ The following **additional** features are implemented:
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1.
+1. Would like to learn more about how to to implement transitioning animations and that kind of stuff to make a nice UI
 2.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://i.imgur.com/J1gofwC.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
