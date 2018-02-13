@@ -11,11 +11,20 @@ import UIKit
 class SuperheroViewController: UIViewController, UICollectionViewDataSource {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     
     var movies: [[String: Any]] = []
+    var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        refreshControl = UIRefreshControl()
+        refreshControl.alpha = 0
+        refreshControl.addTarget(self, action: #selector(SuperheroViewController.didPullToRefresh(_:)), for: .valueChanged)
+        
+        collectionView.insertSubview(refreshControl, at: 0)
         
         collectionView.dataSource = self
         
@@ -30,6 +39,10 @@ class SuperheroViewController: UIViewController, UICollectionViewDataSource {
         fetchMovies()
 
         // Do any additional setup after loading the view.
+    }
+    
+    @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
+        fetchMovies()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -51,7 +64,7 @@ class SuperheroViewController: UIViewController, UICollectionViewDataSource {
     func fetchMovies() {
         // Data fetch animation
         collectionView.alpha = 0
-        // activityIndicator.startAnimating()
+        activityIndicator.startAnimating()
         
         // Get the URL and request the data
         let url = URL(string: "https://api.themoviedb.org/3/movie/297762/similar?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US&page=1")!
@@ -85,15 +98,12 @@ class SuperheroViewController: UIViewController, UICollectionViewDataSource {
                 print(dataDictionary)
                 let movies = dataDictionary["results"] as! [[String: Any]]
                 
-                // When app starts and movies is empty, assign data to filtered Data as well
-                //if (self.movies.isEmpty) {self.filteredData = movies}
-                
                 // Store data into movies dictionary and reload table
                 self.movies = movies
                 self.collectionView.reloadData()
-                //self.refreshControl.endRefreshing()
+                self.refreshControl.endRefreshing()
                 self.collectionView.alpha = 1
-                //self.activityIndicator.stopAnimating()
+                self.activityIndicator.stopAnimating()
             }
         }
         task.resume()
