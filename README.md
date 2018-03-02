@@ -83,8 +83,6 @@ The following **stretch** features are implemented:
 - [x] Customize the navigation bar (+1pt)
 - [x] Implemented the search bar function
 - [x] Added a deselect animation when clicking a cell
-   - ...
-   - ...
 
 The following **additional** features are implemented:
 
@@ -187,20 +185,20 @@ Describe any challenges encountered while building the app.
 
 Flix is a movies app displaying box office and top rental DVDs using [The Movie Database API](http://docs.themoviedb.apiary.io/#).
 
-Time spent: **X** hours spent in total
+Time spent: 4 hours spent in total
 
 ## User Stories
 
 The following **required** user stories are complete:
 
-- [ ] Create a movie model (+2pt)
-- [ ] Implement the movie model (+2pt)
-- [ ] Implement property observers (+2pt)
-- [ ] Create a basic API Client (+2pt)
+- [x] Create a movie model (+2pt)
+- [x] Implement the movie model (+2pt)
+- [x] Implement property observers (+2pt)
+- [x] Create a basic API Client (+2pt)
 
 The following **additional** user stories are implemented:
 
-- [ ] List anything else that you can get done to improve the app functionality! (+1-3pts)
+- [x] Changed the superhero tab bar to a popular movies tab bar
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
