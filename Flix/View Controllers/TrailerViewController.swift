@@ -12,7 +12,7 @@ class TrailerViewController: UIViewController {
 
     @IBOutlet weak var webView: UIWebView!
     
-    var movie: [String: Any]?
+    var movie: Movie?
     var trailers: [[String: Any]] = []
     
     
@@ -26,8 +26,8 @@ class TrailerViewController: UIViewController {
     func fetchTrailer() {
         let first_url = "https://api.themoviedb.org/3/movie/"
         let second_url = "/videos?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US"
-        let movie_id = movie!["id"] as! NSNumber
-        let url = URL(string: first_url + movie_id.stringValue + second_url)!
+        let movie_id = movie?.id
+        let url = URL(string: first_url + (movie_id?.stringValue)! + second_url)!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         let task = session.dataTask(with: request) { (data, response, error) in
@@ -39,7 +39,6 @@ class TrailerViewController: UIViewController {
             } else if let data = data {
                 // Fetch the data from the JSON file
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                print(dataDictionary)
                 let trailers = dataDictionary["results"] as! [[String: Any]]
                 let trailer = trailers[0]
                 let key = trailer["key"] as! String

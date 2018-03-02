@@ -15,8 +15,8 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var movies: [[String: Any]] = []
-    var filteredData: [[String: Any]] = []
+    var movies: [Movie] = []
+    var filteredData: [Movie] = []
     var refreshControl: UIRefreshControl!
     
     
@@ -34,7 +34,15 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         // Set the height of the cells
         self.tableView.rowHeight = 190
         
-        fetchMovies()
+        MovieApiManager().nowPlayingMovies { (movies: [Movie]?, error: Error?) in
+            if let movies = movies {
+                if (self.movies.isEmpty){self.filteredData = movies}
+                self.movies = movies
+                self.tableView.reloadData()
+            } else if let error = error {
+                self.handleNetErrors(error: error)
+            }
+        }
         
         // Set the filtered Data to the complete movies dictionary
         filteredData = movies
@@ -42,58 +50,38 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
     
     // Refresh data function. Will call the function to fetch data
     @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
-        fetchMovies()
-    }
-    
-    func fetchMovies() {
-        // Data fetch animation
         tableView.alpha = 0
         activityIndicator.startAnimating()
-        
-        // Get the URL and request the data
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        let task = session.dataTask(with: request) { (data, response, error) in
-            
-            // This will run when the network request returns
-            if let error = error {
-                
-                print(error.localizedDescription)
-                
-                // Create Network Error handler
-                let alertController = UIAlertController(title: "Cannot Get Movies", message: "The internet connection appears to be offline", preferredStyle: .alert)
-                
-                // create a Try Again action
-                let TryAction = UIAlertAction(title: "Try Again", style: .default) { (action) in
-                    // handle response here.
-                    self.fetchMovies()
-                }
-                // add the Try Again action to the alert controller
-                alertController.addAction(TryAction)
-                
-                // Show error message
-                self.present(alertController, animated: true) {}
-                return
-                
-            } else if let data = data {
-                // Fetch the data from the JSON file
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                print(dataDictionary)
-                let movies = dataDictionary["results"] as! [[String: Any]]
-                
-                // When app starts and movies is empty, assign data to filtered Data as well
+        MovieApiManager().nowPlayingMovies { (movies: [Movie]?, error: Error?) in
+            if let movies = movies {
                 if (self.movies.isEmpty) {self.filteredData = movies}
-                
-                // Store data into movies dictionary and reload table
                 self.movies = movies
                 self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
                 self.tableView.alpha = 1
                 self.activityIndicator.stopAnimating()
+            } else if let error = error {
+                self.handleNetErrors(error: error)
             }
         }
-        task.resume()
+    }
+    
+    func handleNetErrors(error: Error!) {
+        print(error.localizedDescription)
+        
+        // Create Network Error handler
+        let alertController = UIAlertController(title: "Cannot Get Movies", message: "The internet connection appears to be offline", preferredStyle: .alert)
+        
+        // create a Try Again action
+        let TryAction = UIAlertAction(title: "Try Again", style: .default) { (action) in
+            // handle response here.
+            self.didPullToRefresh(self.refreshControl)
+        }
+        // add the Try Again action to the alert controller
+        alertController.addAction(TryAction)
+        
+        // Show error message
+        self.present(alertController, animated: true) {}
         
     }
     
@@ -103,18 +91,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
-        
-        let movie = filteredData[indexPath.row]
-        let title = movie["title"] as! String
-        let overview = movie["overview"] as! String
-        cell.titleLabel.text = title
-        cell.overviewTextView.text = overview
-        
-        let posterPathString = movie["poster_path"] as! String
-        let baseURLString = "https://image.tmdb.org/t/p/w500"
-        let posterURL = URL(string: baseURLString + posterPathString)!
-        cell.posterImageView.af_setImage(withURL: posterURL)
-        
+        cell.movie = filteredData[indexPath.row]
         return cell
     }
     
@@ -140,13 +117,10 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         // Use the filter method to iterate over all items in the data array
         // For each item, return true if the item should be included and false if the
         // item should NOT be included
-        filteredData = searchText.isEmpty ? movies : movies.filter { (item: [String:Any]) -> Bool in
-            
-            // Cast it so that it searches for the title
-            let title = item["title"] as! String
+        filteredData = searchText.isEmpty ? movies : movies.filter { (item: Movie) -> Bool in
             
             // If dataItem matches the searchText, return true to include it
-            return title.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
+            return item.title.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
         }
         
         tableView.reloadData()

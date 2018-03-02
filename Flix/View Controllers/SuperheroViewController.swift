@@ -14,7 +14,7 @@ class SuperheroViewController: UIViewController, UICollectionViewDataSource {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     
-    var movies: [[String: Any]] = []
+    var movies: [Movie] = []
     var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
@@ -36,13 +36,49 @@ class SuperheroViewController: UIViewController, UICollectionViewDataSource {
         let width = collectionView.frame.size.width / cellsPerLine - interItemSpacingTotal / cellsPerLine
         layout.itemSize = CGSize(width: width, height: width * 3 / 2)
         
-        fetchMovies()
-
-        // Do any additional setup after loading the view.
+        MovieApiManager().popularMovies { (movies: [Movie]?, error: Error?) in
+            if let movies = movies {
+                self.movies = movies
+                self.collectionView.reloadData()
+            } else if let error = error {
+                self.handleNetErrors(error: error)
+            }
+        }
     }
     
     @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
-        fetchMovies()
+        collectionView.alpha = 0
+        activityIndicator.startAnimating()
+        MovieApiManager().popularMovies { (movies: [Movie]?, error: Error?) in
+            if let movies = movies {
+                self.movies = movies
+                self.collectionView.reloadData()
+                self.refreshControl.endRefreshing()
+                self.collectionView.alpha = 1
+                self.activityIndicator.stopAnimating()
+            } else if let error = error {
+                self.handleNetErrors(error: error)
+            }
+        }
+    }
+    
+    func handleNetErrors(error: Error!) {
+        print(error.localizedDescription)
+        
+        // Create Network Error handler
+        let alertController = UIAlertController(title: "Cannot Get Movies", message: "The internet connection appears to be offline", preferredStyle: .alert)
+        
+        // create a Try Again action
+        let TryAction = UIAlertAction(title: "Try Again", style: .default) { (action) in
+            // handle response here.
+            self.didPullToRefresh(self.refreshControl)
+        }
+        // add the Try Again action to the alert controller
+        alertController.addAction(TryAction)
+        
+        // Show error message
+        self.present(alertController, animated: true) {}
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -51,62 +87,9 @@ class SuperheroViewController: UIViewController, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PosterCell", for: indexPath) as! PosterCell
-        let movie = movies[indexPath.item]
-        if let posterPathString = movie["poster_path"] as? String {
-            let baseURLString = "https://image.tmdb.org/t/p/w500"
-            let posterURL = URL(string: baseURLString + posterPathString)!
-            cell.posterimageView.af_setImage(withURL: posterURL)
-        }
+        cell.movie = movies[indexPath.item]
         return cell
         
-    }
-    
-    func fetchMovies() {
-        // Data fetch animation
-        collectionView.alpha = 0
-        activityIndicator.startAnimating()
-        
-        // Get the URL and request the data
-        let url = URL(string: "https://api.themoviedb.org/3/movie/297762/similar?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US&page=1")!
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        let task = session.dataTask(with: request) { (data, response, error) in
-            
-            // This will run when the network request returns
-            if let error = error {
-                
-                print(error.localizedDescription)
-                
-                // Create Network Error handler
-                let alertController = UIAlertController(title: "Cannot Get Movies", message: "The internet connection appears to be offline", preferredStyle: .alert)
-                
-                // create a Try Again action
-                let TryAction = UIAlertAction(title: "Try Again", style: .default) { (action) in
-                    // handle response here.
-                    self.fetchMovies()
-                }
-                // add the Try Again action to the alert controller
-                alertController.addAction(TryAction)
-                
-                // Show error message
-                self.present(alertController, animated: true) {}
-                return
-                
-            } else if let data = data {
-                // Fetch the data from the JSON file
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                print(dataDictionary)
-                let movies = dataDictionary["results"] as! [[String: Any]]
-                
-                // Store data into movies dictionary and reload table
-                self.movies = movies
-                self.collectionView.reloadData()
-                self.refreshControl.endRefreshing()
-                self.collectionView.alpha = 1
-                self.activityIndicator.stopAnimating()
-            }
-        }
-        task.resume()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

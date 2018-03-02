@@ -11,4 +11,16 @@ import UIKit
 class PosterCell: UICollectionViewCell {
     
     @IBOutlet weak var posterimageView: UIImageView!
+    
+    var movie: Movie! {
+        willSet {
+        }
+        didSet {
+            if movie !== oldValue {
+                if (movie.posterURL != nil) {
+                    posterimageView.af_setImage(withURL: movie.posterURL!)
+                }
+            }
+        }
+    }
 }

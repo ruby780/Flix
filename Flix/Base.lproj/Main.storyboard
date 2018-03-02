@@ -267,7 +267,7 @@
             </objects>
             <point key="canvasLocation" x="64.799999999999997" y="132.68365817091455"/>
         </scene>
-        <!--Superheroes-->
+        <!--Most Popular-->
         <scene sceneID="JLg-lF-qD3">
             <objects>
                 <viewController id="Ozc-UW-ylK" customClass="SuperheroViewController" customModule="Flix" customModuleProvider="target" sceneMemberID="viewController">
@@ -324,7 +324,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="n4n-5C-cfs"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Superheroes" id="y6T-M6-Vzz" userLabel="Superheroes"/>
+                    <navigationItem key="navigationItem" title="Most Popular" id="y6T-M6-Vzz" userLabel="Superheroes"/>
                     <connections>
                         <outlet property="activityIndicator" destination="m8w-Qu-VuP" id="QEl-5p-aG7"/>
                         <outlet property="collectionView" destination="P41-ob-dqC" id="A0L-4O-Ya5"/>
@@ -356,11 +356,11 @@
             </objects>
             <point key="canvasLocation" x="-830" y="133"/>
         </scene>
-        <!--Superhero-->
+        <!--Popular-->
         <scene sceneID="DZ0-O2-vfZ">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pnv-oP-rcM" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Superhero" image="superhero_tabbar_item" id="3l3-op-3w2"/>
+                    <tabBarItem key="tabBarItem" title="Popular" image="ticket_tabbar_icon" id="3l3-op-3w2"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="blackTranslucent" id="4g3-Iv-OCd">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -379,7 +379,7 @@
     </scenes>
     <resources>
         <image name="now_playing_tabbar_item" width="21" height="21"/>
-        <image name="superhero_tabbar_item" width="21" height="23"/>
+        <image name="ticket_tabbar_icon" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Tye-xs-DFl"/>

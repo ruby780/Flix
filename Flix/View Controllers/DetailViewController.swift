@@ -7,15 +7,6 @@
 //
 
 import UIKit
-enum MovieKeys {
-    static let title = "title"
-    static let releaseDate = "release_date"
-    static let overview = "overview"
-    static let backdropPath = "backdrop_path"
-    static let posterPath = "poster_path"
-    static let score = "vote_average"
-    
-}
 
 class DetailViewController: UIViewController {
     
@@ -27,18 +18,18 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var overviewTextView: UITextView!
     @IBOutlet weak var scoreLabel: UILabel!
     
-    var movie: [String: Any]?
+    var movie: Movie?
     var trailers: [[String: Any]] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         if let movie = movie {
-            titleLabel.text = movie[MovieKeys.title] as? String
-            releaseDateLabel.text = movie[MovieKeys.releaseDate] as? String
-            overviewTextView.text = movie[MovieKeys.overview] as? String
-            let scoreVal = movie[MovieKeys.score] as! Double
-            scoreLabel.text = String(describing: movie[MovieKeys.score]!) + "/10"
+            titleLabel.text = movie.title
+            releaseDateLabel.text = movie.releaseDate
+            overviewTextView.text = movie.overview
+            let scoreVal = movie.scoreVal
+            scoreLabel.text = String(describing: scoreVal) + "/10"
             
             if (scoreVal >= 7) {
                 scoreLabel.textColor = UIColor.green
@@ -52,15 +43,13 @@ class DetailViewController: UIViewController {
                 scoreLabel.textColor = UIColor.red
             }
             
-            let backdropPathString = movie[MovieKeys.backdropPath] as! String
-            let posterPathString = movie[MovieKeys.posterPath] as! String
-            let baseURLString = "https://image.tmdb.org/t/p/w500"
+            if (movie.backdropURL != nil) {
+                backDropImageView.af_setImage(withURL: movie.backdropURL!)
+            }
             
-            let backdropURL = URL(string: baseURLString + backdropPathString)!
-            backDropImageView.af_setImage(withURL: backdropURL)
-            
-            let posterPathURL = URL(string: baseURLString + posterPathString)!
-            posterImageView.af_setImage(withURL: posterPathURL)
+            if (movie.posterURL != nil) {
+                posterImageView.af_setImage(withURL: movie.posterURL!)
+            }
             posterImageView.layer.borderWidth = 2
             posterImageView.layer.borderColor = UIColor.yellow.cgColor
             
